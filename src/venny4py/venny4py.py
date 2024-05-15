@@ -41,7 +41,7 @@ def get_unique(shared):
 
 
 #plot Venn
-def venny4py(sets={}, out='./', asax=False, ext='png', dpi=300, size=3.5):
+def venny4py(sets={}, out='./', asax=False, ext='png', dpi=300, size=3.5, colors=[]):
     shared = get_shared(sets)
     unique = get_unique(shared)
     ce = 'bgrc' #colors
@@ -76,7 +76,11 @@ def venny4py(sets={}, out='./', asax=False, ext='png', dpi=300, size=3.5):
         ae = [225, 225, 315, 315] #angles
 
         for i, s in enumerate(sets):
-            ax.add_artist(Ellipse(xy=(xe[i], ye[i]), width=ew, height=eh, fc=ce[i], 
+            if len(colors) > i:
+                ce_color = colors[i]
+            else:
+                ce_color = ce[i]
+            ax.add_artist(Ellipse(xy=(xe[i], ye[i]), width=ew, height=eh, fc=ce_color,
                                   angle=ae[i], alpha=.3))
             ax.add_artist(Ellipse(xy=(xe[i], ye[i]), width=ew, height=eh, fc='None',
                                   angle=ae[i], ec='black', lw=lw))
@@ -153,10 +157,15 @@ def venny4py(sets={}, out='./', asax=False, ext='png', dpi=300, size=3.5):
             ax.text(xt[j], yt[j], len(unique[k]), ha='center', va='center', fontsize=fs, 
                     transform=ax.transData)
                 
-    #legend
-    handles = [mpatches.Patch(color=ce[i], label=l, alpha=.3) for i, l in enumerate(sets)]
+    #lege
+    if len(colors) > 0:
+        ce_colors = colors
+    else:
+        ce_colors = ce
+    handles = [mpatches.Patch(color=ce_colors[i], label=l, alpha=.3) for i, l in enumerate(sets)]
     ax.legend(labels=sets, handles=handles, fontsize=fs*1.1, frameon=False, 
               bbox_to_anchor=(.5, .99), bbox_transform=ax.transAxes, loc=9, 
               handlelength=1.5, ncol=nc, columnspacing=cs, handletextpad=.5)
     if asax == False:
         fig.savefig(f'{out}/Venn_{len(sets)}.{ext}', bbox_inches='tight', facecolor='w', )
+    return fig
